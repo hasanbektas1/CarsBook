@@ -12,9 +12,7 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 
 Öncelikle activitlerimizin xml görünümlerini oluşturuyoruz.
 
-MainAcitivity.xml
-
-
+ # activity_main.xml
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -36,10 +34,7 @@ MainAcitivity.xml
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 ```
-
-CarActivity.xml
-
-
+ # activity_car.xml
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -141,3 +136,10 @@ CarActivity.xml
 
 
 ```
+
+Şimdi liste ekranından yani Mainactivity'den yeni kayıt yapılacak CarActivity ekranına geçiş için **menu** oluşturuyoruz.
+
+res > New > Android Resource File
+
+ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
+
