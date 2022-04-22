@@ -139,7 +139,7 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 
 Şimdi liste ekranından yani Mainactivity'den yeni kayıt yapılacak CarActivity ekranına geçiş için **menu** oluşturuyoruz.
 
-res > New > Android Resource File
+> res > New > Android Resource File
 
 ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
 
