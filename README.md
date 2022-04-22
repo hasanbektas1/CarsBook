@@ -169,7 +169,7 @@ Daha sonra MainActivity sınıfımızda ouşturulan menü'yü bağlama işlemi y
 
 ilk fonksiyonda menümüzü MainAcitivitemiz ile bağlıyoruz ikincisinde ise menüdeki iteme tıklanınca ne olacağını yazıyoruz.
 
-Listeye ekleme yapabilmek için Galeriden seçilen veya Cameradan çekilen fotoğrafı alabilmek için izinler gereklidir
+Listeye ekleme yapabilmek için galeriden seçilen veya Kameradan çekilen fotoğrafı alabilmek için izinler gereklidir
 
 Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
 
@@ -185,7 +185,7 @@ Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
 private lateinit var intentResultLauncher : ActivityResultLauncher<Intent>
 private lateinit var permissionLaunchergallery : ActivityResultLauncher<String>
 ```
-ActivityResultLauncher <> işaretleri içerisinde bir tip ister ve hangi tipte olağını oraya giriyoruz
+ActivityResultLauncher <> işaretleri içerisinde bir tip ister ve hangi tipte olacağını oraya giriyoruz
 İzinler String olduğu için String olarak belirtiyouz
 
 izin verilmesi durumunda galeriye gidip oradaki fotoğrafın adresini yani url'sini buluyoruz
@@ -217,7 +217,7 @@ Ve son olarak fotoğrafı ekranımızda gösteriyoruz.
             })
 ```
 
-Daha sonra istenilecek izin içinde bir Launcher oluşturuyoruz.
+Daha sonra istenilecek izinler için Launcher'larımızı oluşturuyoruz.
  **Galeri İzni**
 ```
         permissionLaunchergallery = registerForActivityResult(ActivityResultContracts.RequestPermission(),
