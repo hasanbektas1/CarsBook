@@ -137,6 +137,10 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 > res > New > Android Resource File
 ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
 res dosyası altında menu klasörümüz oluşuyor ve içerisinde menümuzun xmlinde görünümü yaratıyoruz.
+menüdeki icon görünümü için
+> res > drawable > Vector Asset 
+seçip açılan pencerede oluşturabiliyoruz sonra menu xmli içerisinde oluşturulan iconu seçiyoruz.
+
 
 ### car_menu.xml
 ```
@@ -155,9 +159,6 @@ res dosyası altında menu klasörümüz oluşuyor ve içerisinde menümuzun xml
 
 </menu>
 ```
-
-
-
 Daha sonra MainActivity sınıfımızda ouşturulan menü'yü bağlama işlemi yapılmalı, bunun için iki adet fonksiyonu override ediyoruz.
 - onCreateOptionsMenu
 - onOptionsItemSelected
@@ -173,13 +174,53 @@ Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
  
  İzinleri ekledikten sonra iznin protection leveli **dangerous** ise kullanıcıdan uygulama içeriside de izin almamız gerekiyor.
  
- Kullanıcı galeriye gitmeden önce galleryButton fonksiyonu içerisinde iznimizi istiyoruz.
  
  İzin geri dönüşü için ve izin sonucunda gidilen galeriden veri dönüşü için  **ActivityResultLauncher** sınıfını kullanıyoruz.
 ```
 private lateinit var intentResultLauncher : ActivityResultLauncher<Intent>
 private lateinit var permissionLaunchergallery : ActivityResultLauncher<String>
 ```
+ActivityResultLauncher <> işaretleri içerisinde bir tip ister ve hangi tipte olağını oraya giriyoruz
+İzinler String olduğu için String olarak belirtiyouz
+
+Kullanıcı galeriye gitmeden önce galleryButton fonksiyonu içerisinde iznimizi istiyoruz.
+```
+   if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
+            permissionLaunchergallery.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        }
+```
+izin verilmesi durumunda galeriye gidip oradaki fotoğrafın adresini yani url'sini buluyoruz
+
+Daha sonra bir bitmap oluşturmalıyız fotoğrafı SQLiteye kayıt ederken fotoğrafın 1 MB' yi geçmesini önlemek için, aksi takdirde programımız düzgün çalışmayabilir.
+Url'yi bitmap olarak dönüştürmek için ise **ImageDecoder** sınıfını kullanıyoruz. Ancak eski versiyonlarda çalışmadığı için önce versiyon kontorolü yapıyoruz.
+Ve son olarak fotoğrafı ekranımızda gösteriyoruz.
+```
+        intentResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
+            ActivityResultCallback {
+                if (it.resultCode == RESULT_OK){
+                    val intentFromResult = it.data
+                    if (intentFromResult != null){
+                         val imageData = intentFromResult.data
+                        try {
+                            if (Build.VERSION.SDK_INT >= 28){
+                                val source = ImageDecoder.createSource(contentResolver,imageData!!)
+                                selectedBitmap = ImageDecoder.decodeBitmap(source)
+                                binding.imageView.setImageBitmap(selectedBitmap)
+                            }else {
+                                selectedBitmap = MediaStore.Images.Media.getBitmap(contentResolver,imageData)
+                                binding.imageView.setImageBitmap(selectedBitmap)
+                            }
+                        }catch (e:Exception){
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            })
+```
+
+
  
  
  
