@@ -321,7 +321,29 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
         }
     }
 ```
- 
+
+SQLiteye görsellirimizi kaydetmek için bitmap olarak dönüştürülen görsellerimizi küçültme fonksiyonumuzu yazıyoruz.
+Görseli bozmadan yüksekliğini ve genişliğini aynı oranda küçültme yapıyoruz.
+```
+    private fun makeSmallBitmap(image:Bitmap,maximumSize : Int): Bitmap {
+
+        var width = image.width
+        var height = image.height
+
+        var bitmapRatio : Double = width.toDouble() / height.toDouble()
+
+        if (bitmapRatio > 1){
+            width = maximumSize
+            val scaledHeight = width / bitmapRatio
+            height = scaledHeight.toInt()
+        }else{
+            height = maximumSize
+            val scaledWidth = height * bitmapRatio
+            width = scaledWidth.toInt()
+        }
+        return Bitmap.createScaledBitmap(image,width,height,true)
+    }
+ ```
  
  
 
