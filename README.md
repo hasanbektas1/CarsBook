@@ -143,3 +143,25 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 
 ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
 
+Daha sonra MainActivity sınıfımızda ouşturulan menü'yü bağlama işlemi yapılmalı, bunun için iki adet fonksiyonu override ediyoruz.
+- onCreateOptionsMenu
+- onOptionsItemSelected
+ilk fonksiyonda menümüzü MainAcitivitemiz ile bağlıyoruz ikincisinde ise menüdeki iteme tıklanınca ne olacağını yazıyoruz.
+
+Listeye ekleme yapabilmek için Galeriden seçilen veya Cameradan çekilen fotoğrafı alabilmek için izinler gereklidir
+
+Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
+
+- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+- <uses-permission android:name="android.permission.CAMERA"/>
+- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE">
+ 
+ İzinleri ekledikten sonra iznin protection leveli **dangerous** ise kullanıcıdan uygulama içeriside de izin almamız gerekiyor.
+ 
+ 
+
+
+
+
+
+
