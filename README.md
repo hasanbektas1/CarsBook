@@ -22,7 +22,6 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -133,16 +132,10 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="OnClick" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 ```
-
 Şimdi liste ekranından yani Mainactivity'den yeni kayıt yapılacak CarActivity ekranına geçiş için **menu** oluşturuyoruz.
-
 > res > New > Android Resource File
-
 ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
-
 res dosyası altında menu klasörümüz oluşuyor ve içerisinde menümuzun xmlinde görünümü yaratıyoruz.
 
 ### car_menu.xml
@@ -179,6 +172,15 @@ Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
 - android.permission.WRITE_EXTERNAL_STORAGE"
  
  İzinleri ekledikten sonra iznin protection leveli **dangerous** ise kullanıcıdan uygulama içeriside de izin almamız gerekiyor.
+ 
+ Kullanıcı galeriye gitmeden önce galleryButton fonksiyonu içerisinde iznimizi istiyoruz.
+ 
+ İzin geri dönüşü için ve izin sonucunda gidilen galeriden veri dönüşü için  **ActivityResultLauncher** sınıfını kullanıyoruz.
+```
+private lateinit var intentResultLauncher : ActivityResultLauncher<Intent>
+private lateinit var permissionLaunchergallery : ActivityResultLauncher<String>
+```
+ 
  
  
 
