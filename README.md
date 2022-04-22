@@ -12,7 +12,7 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 
 Öncelikle activitlerimizin xml görünümlerini oluşturuyoruz.
 
- # activity_main.xml
+ ### activity_main.xml
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -34,7 +34,7 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 ```
- # activity_car.xml
+ ### activity_car.xml
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -143,6 +143,28 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 
 ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
 
+res dosyası altında menu klasörümüz oluşuyor ve içerisinde menümuzun xmlinde görünümü yaratıyoruz.
+
+### car_menu.xml
+```
+
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/carAdd"
+        android:title="Add Car"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="always|collapseActionView"
+        >
+
+    </item>
+
+</menu>
+```
+
+
+
 Daha sonra MainActivity sınıfımızda ouşturulan menü'yü bağlama işlemi yapılmalı, bunun için iki adet fonksiyonu override ediyoruz.
 - onCreateOptionsMenu
 - onOptionsItemSelected
@@ -152,9 +174,9 @@ Listeye ekleme yapabilmek için Galeriden seçilen veya Cameradan çekilen foto�
 
 Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
 
-- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-- <uses-permission android:name="android.permission.CAMERA"/>
-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE">
+- android.permission.READ_EXTERNAL_STORAGE"
+- android.permission.CAMERA"
+- android.permission.WRITE_EXTERNAL_STORAGE"
  
  İzinleri ekledikten sonra iznin protection leveli **dangerous** ise kullanıcıdan uygulama içeriside de izin almamız gerekiyor.
  
