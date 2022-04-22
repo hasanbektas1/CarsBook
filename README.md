@@ -134,11 +134,15 @@ Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen a
 </androidx.constraintlayout.widget.ConstraintLayout>
 ```
 Şimdi liste ekranından yani Mainactivity'den yeni kayıt yapılacak CarActivity ekranına geçiş için **menu** oluşturuyoruz.
+
 > res > New > Android Resource File
+> 
 ile açılan pencerede menu ismini yazıp altında Resource type kısmında menu seçiyoruz.
 res dosyası altında menu klasörümüz oluşuyor ve içerisinde menümuzun xmlinde görünümü yaratıyoruz.
 menüdeki icon görünümü için
+
 > res > drawable > Vector Asset 
+> 
 seçip açılan pencerede oluşturabiliyoruz sonra menu xmli içerisinde oluşturulan iconu seçiyoruz.
 
 
