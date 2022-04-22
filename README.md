@@ -345,8 +345,54 @@ Görseli bozmadan yüksekliğini ve genişliğini aynı oranda küçültme yapı
     }
  ```
  
+ Artık kayıt etme butonunun kod bloğu içerisini yazma aşamasına geldik.
  
+ Öncelikle SQLiteye kayıt edilecek olan carName, modelName ve year verilerini degişkenlere aktardık daha sonra SQLİteye kayıt işlemlerini yapacağız ama görseli bitmap olarak SQLiteye kayıt edemeyiz. Görselimizi **ByteArray** olarak dönüştürmeliyiz.
+Bunun için **ByteArrayOutputStream** yardımcı sınıfını kullanıyoruz. 
+```
+ fun saveButton(view : View){
 
+        val carName = binding.carNameText.text.toString()
+        val modelName = binding.modelNameText.text.toString()
+        val year = binding.yearText.text.toString()
+
+        if (selectedBitmap !=null){
+            val smallBitmap = makeSmallBitmap(selectedBitmap!!,300)
+
+            val outputStream = ByteArrayOutputStream()
+            smallBitmap.compress(Bitmap.CompressFormat.PNG,50,outputStream)
+            val byteArray = outputStream.toByteArray()
+ ```
+ 
+ Yukarıdaki kod bloğunda görüldüğü üzere görselimizi SQLiteye kayıt edilecek şekilde bir veriye dönüştürdük.
+ Şimdi SQLiteye kayıt işlemi için try and catch içerisinde kodlarımızı yazıyoruz.
+ ```
+  try {
+                val database = this.openOrCreateDatabase("Cars", MODE_PRIVATE,null)
+                database.execSQL("CREATE TABLE IF NOT EXISTS cars(id INTEGER PRIMARY KEY, carname VARCHAR, modelname VARCHAR, year VARCHAR, image BLOB)")
+                val sqlString = "INSERT INTO cars(carname, modelname, year, image) VALUES(?,?,?,?)"
+                val statement = database.compileStatement(sqlString)
+                statement.bindString(1,carName)
+                statement.bindString(2,modelName)
+                statement.bindString(3,year)
+                statement.bindBlob(4,byteArray)
+                statement.execute()
+ ```
+ Yukarıdaki kod bloğunda öncelikle SQLite databasemizi oluşturduktan sonra bu database ismimizi belirliyoruz. 
+ Daha sonra SQLite kodlarımıza bir tablo yok ise oluştur komutunun ardından tablodaki sütunları ve tiplerini belirliyoruz.
+ verilen id değeri veri eklendikçe otomatik olarak artacaktır ve verileri çekmek için kullanacağız.
+ ```
+ val sqlString = "INSERT INTO cars(carname, modelname, year, image) VALUES(?,?,?,?)"
+```
+Bu kısımda ise kullanıcıdan gelen verilerimiz bir degişkende oldugu için soru işaretleri ile birbirine bağlama işlemlerini yapacağız. Bu bağlama işlemi için compileStatement() metodu ile hangi türde verinin hangi soru işareti ile bağlanması gerektiğini yazıyoruz. Artık kayıt işlemini tamamlamış olduk
+
+Şimdi ise kayıt işlemi bittikten sonra giriş ekranına yani MainActivity'ye dönüyoruz.
+```
+val intent = Intent(this@CarActivity, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(intent)
+```
+İntent ile giriş ekranına dönüş yaparken arkada açık kalan aktivite olamaması için addFlags() kullanıyoruz ve önceki açık olan aktiviteleri kapatıyoruz.
 
 
 
