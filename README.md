@@ -162,6 +162,7 @@ seçip açılan pencerede oluşturabiliyoruz sonra menu xmli içerisinde oluştu
 Daha sonra MainActivity sınıfımızda ouşturulan menü'yü bağlama işlemi yapılmalı, bunun için iki adet fonksiyonu override ediyoruz.
 - onCreateOptionsMenu
 - onOptionsItemSelected
+
 ilk fonksiyonda menümüzü MainAcitivitemiz ile bağlıyoruz ikincisinde ise menüdeki iteme tıklanınca ne olacağını yazıyoruz.
 
 Listeye ekleme yapabilmek için Galeriden seçilen veya Cameradan çekilen fotoğrafı alabilmek için izinler gereklidir
@@ -183,14 +184,6 @@ private lateinit var permissionLaunchergallery : ActivityResultLauncher<String>
 ActivityResultLauncher <> işaretleri içerisinde bir tip ister ve hangi tipte olağını oraya giriyoruz
 İzinler String olduğu için String olarak belirtiyouz
 
-Kullanıcı galeriye gitmeden önce galleryButton fonksiyonu içerisinde iznimizi istiyoruz.
-```
-   if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-
-            permissionLaunchergallery.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-
-        }
-```
 izin verilmesi durumunda galeriye gidip oradaki fotoğrafın adresini yani url'sini buluyoruz
 
 Daha sonra bir bitmap oluşturmalıyız fotoğrafı SQLiteye kayıt ederken fotoğrafın 1 MB' yi geçmesini önlemek için, aksi takdirde programımız düzgün çalışmayabilir.
@@ -220,7 +213,110 @@ Ve son olarak fotoğrafı ekranımızda gösteriyoruz.
             })
 ```
 
+Daha sonra istenilecek izin içinde bir Launcher oluşturuyoruz.
+ **Galeri İzni**
+```
+        permissionLaunchergallery = registerForActivityResult(ActivityResultContracts.RequestPermission(),
+            ActivityResultCallback {
+                if(it){
+                    val intentToGallery = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    intentResultLauncher.launch(intentToGallery)
+                }else{
+                    Toast.makeText(this@CarActivity,"Permission Needed",Toast.LENGTH_LONG).show()
+                }
+            })
+```
+ **Kamera İzni**
+ ```
+     permissionLaunchercamera = registerForActivityResult(ActivityResultContracts.RequestPermission()){ result ->
 
+            if (result ){
+
+                binding.imageView.visibility = View.VISIBLE
+                binding.gallery.visibility = View.INVISIBLE
+                binding.camera.visibility = View.INVISIBLE
+
+                openCamera()
+
+            }else{
+                Toast.makeText(applicationContext,"Permission needed!", Toast.LENGTH_LONG).show()
+            }
+        }
+```
+
+ve izin istenilecek yerlerde bu oluşturulan Launcher'imizi çağırıyoruz.
+```
+  fun galleryButton(view : View){
+        if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
+            permissionLaunchergallery.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+        }else {
+            binding.imageView.visibility = View.VISIBLE
+            binding.gallery.visibility = View.INVISIBLE
+            binding.camera.visibility = View.INVISIBLE
+
+            val intentToGallery = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            intentResultLauncher.launch(intentToGallery)
+        }
+    }
+```
+
+```
+   fun cameraButton(view : View){
+        if(ContextCompat.checkSelfPermission(this,android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            permissionLaunchercamera.launch(android.Manifest.permission.CAMERA)
+        }else{
+            openCamera()
+            binding.imageView.visibility = View.VISIBLE
+            binding.gallery.visibility = View.INVISIBLE
+            binding.camera.visibility = View.INVISIBLE
+        }
+    }
+```
+
+kamera izni verilmesi durumunda kamerayı açma fonksiyonuzumu yazıyoruz.
+```
+   private fun openCamera() {
+
+        val contentValues = ContentValues()
+        contentValues.put(MediaStore.Images.Media.TITLE,"imageTitle")
+        imageUri=contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues)
+
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri)
+        startActivityForResult(intent, IMAGE_CAPTURE_CODE)
+
+    }
+```
+
+Kameradan çekilen fotoğrafı alabilmek için onActivityResult fonksiyonumuzu override ediyoruz ve galeriden seçilen fotoğraf gibi SQLiteye kayıt etmeden küçültme yapabilmek için bitmap'a dünüştürüyoruz.
+```
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode== Activity.RESULT_OK){
+            if (imageUri != null){
+                try {
+                    if (Build.VERSION.SDK_INT >=28){
+
+                        val source = ImageDecoder.createSource(this@CarActivity.contentResolver,imageUri!!)
+                        selectedBitmap = ImageDecoder.decodeBitmap(source)
+                        binding.imageView.setImageBitmap(selectedBitmap)
+                        println(selectedBitmap)
+
+                    }else{
+                        selectedBitmap = MediaStore.Images.Media.getBitmap(contentResolver,imageUri)
+                        binding.imageView.setImageBitmap(selectedBitmap)
+                    }
+
+                } catch (e: java.lang.Exception){
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+```
  
  
  
