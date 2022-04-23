@@ -492,7 +492,53 @@ Yukarıda görüldüğü üzere RecyclerView.Adapter'dan extend ettiğimiz için
 - onBindViewHolder
 - getItemCount
 
-*onCreateViewHolder()* fonksiyonumuzda layout ile baglama işlemini yapacağız, *onBindViewHolder()* fonksiyonunda ise bağlandıktan sonra ne olacağını yanı hangi componentte hangi veriyi göstereceğimizi veya bu gösterilenlere tıklanınca ne olacağını yazıyoruz. Son olarak getItemCount() fonksiyonunda ise kaç adet row olacak, tüm listenin uzunluğu diyerek listemin hepsini verebiliyorum.
+*onCreateViewHolder()* fonksiyonumuzda layout ile baglama işlemini , *onBindViewHolder()* fonksiyonunda ise bağlandıktan sonra ne olacağını yanı hangi componentte hangi veriyi göstereceğimizi veya bu gösterilen verilere tıklanınca ne olacağını, son olarak getItemCount() fonksiyonunda ise kaç adet row olacak, tüm listenin uzunluğu diyerek listemizin hepsini yazdırıyoruz.
+onBindViewHolder() foksiyonu içerisinde herhangi bir liste elemanına tıklanınca diğer ekranda detayları görebilmek için intent ile bir *String* veri yolluyoruz. Birazdan bunun detayına değineceğiz.
+
+MainActivitye dönücek olursak burada recyclerView ile ilgili işlemlerimizi tamamlayalım
+```
+        carAdapter = CarAdapter(carList)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.adapter = carAdapter
+```
+onCreate() foksiyonu içerisinde verilerimizi çekmeden önce activity_main.xml içerisinde oluşturduğumuz recyclerView görünümü ile yazdığımız adapteri bağlıyoruz
+Listemizi alt alta sıralı yapıcağımız için LinearLayoutManager() olucağını burada da belirtiyoruz.
+```
+ carAdapter.notifyDataSetChanged()
+```
+Verileri çektikten *while(cursor.moveToNext())* loop'dan sonra yukarıdaki kod ile recyclerView listesine veri setinin değiştiğini ve yeni gelenleri göstermesi için komut vermiş oluyoruz.
+
+Artık yapmamız gereken oluşturduğumuz options menü kısmında bulunan + iconuna tıklanınca kayıt ekranına gidilmesi recyclerView listesindeki bir elemana tıklanınca detay ekranına gidilmesi ile ilgili gereken kodları yazalım.
+
+Yazının başında belirttiğim *onOptionsItemSelected()* fonksiyonu içerisinde tıklanınca intent ile CarActivity'ye geçerken *String* bir veri yolluyoruz.
+```
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.carAdd){
+            val intent = Intent(this@MainActivity,CarActivity::class.java)
+            intent.putExtra("info","carAdd")
+            startActivity(intent)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+```
+RecyclerView listesinde tıklanınca ise yine aynı *String* kelime ama value'sini farklı giriyoruz ki CarActivity ekranında RecyclerView Listesinden tıklanıp mı yoksa menü görünümündeki + iconuna mı tıklanıp gelindiğini ayırt edebiliyoruz.
+```
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context,CarActivity::class.java)
+            intent.putExtra("info","detail")
+            intent.putExtra("id",carList.get(position).id)
+            holder.itemView.context.startActivity(intent)
+        }
+```
+Yukarıdaki kod bloğunda görüldüğü gibi aynı string kelime fakat farklı bir değer yolladık ve detay ekranı olarak gösterirken hangi arabanın seçildiğini bilebilmek için *id* değerinide yolluyoruz.
+
+CarActivity ekranımızda intent ile yollanılan *String* kelimeyi çekebiliyoruz.
+
+```
+        val intent = intent
+        val info = intent.getStringExtra("info")
+```
+
 
 
 
