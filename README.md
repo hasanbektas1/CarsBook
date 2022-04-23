@@ -458,7 +458,7 @@ ile açılan pencerede xml ismimizi belirledikten sonra Root element kısmında 
 ```
 Listemiz yukarıdan aşağıya doğru sıralanması için LinearLayout ile başlatıp içeriden *orientation* türünü *vertical* yaptık
 Şimdi de recyclerView adapterimizi oluşturalım. Öncelikle paket ismimize sağ tıklayıp normal bir class yaratıyoruz.
-Daha sonra bu sınıfımızın bir RecyclerView adapteri olucağını belirtince bizden bir ViewHolder adında bir yardımcı sınıf oluşturmamızı ister, bu sınıf görünüm tutucudur yani xmli bağlama her bir rowda gösterilecekleri belirleme gibi işlemleri kordine eden bir yardımcı sınıf. içerisinde bir işlem yapılmasa da öyle bir sınıf oluşturmamızı ister.
+Daha sonra bu sınıfımızın bir RecyclerView adapteri olucağını belirtince bizden bir ViewHolder adında bir yardımcı sınıf oluşturmamızı ister, bu sınıf görünüm tutucudur yani xmli bağlama her bir rowda gösterilecekleri belirleme gibi işlemleri koordine eden bir yardımcı sınıf. içerisinde bir işlem yapılmasa da böyle bir sınıf oluşturmamızı ister.
 ```
 class CarAdapter(val carList: ArrayList<Car>) : RecyclerView.Adapter<CarAdapter.CarHolder>() {
 
