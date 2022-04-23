@@ -218,6 +218,7 @@ Ve son olarak fotoğrafı ekranımızda gösteriyoruz.
 ```
 
 Daha sonra istenilecek izinler için Launcher'larımızı oluşturuyoruz.
+
  **Galeri İzni**
 ```
         permissionLaunchergallery = registerForActivityResult(ActivityResultContracts.RequestPermission(),
@@ -235,7 +236,6 @@ Daha sonra istenilecek izinler için Launcher'larımızı oluşturuyoruz.
      permissionLaunchercamera = registerForActivityResult(ActivityResultContracts.RequestPermission()){ result ->
 
             if (result ){
-
                 binding.imageView.visibility = View.VISIBLE
                 binding.gallery.visibility = View.INVISIBLE
                 binding.camera.visibility = View.INVISIBLE
@@ -252,9 +252,7 @@ ve izin istenilecek yerlerde bu oluşturulan Launcher'imizi çağırıyoruz.
 ```
   fun galleryButton(view : View){
         if (ContextCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-
             permissionLaunchergallery.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-
         }else {
             binding.imageView.visibility = View.VISIBLE
             binding.gallery.visibility = View.INVISIBLE
@@ -282,7 +280,6 @@ ve izin istenilecek yerlerde bu oluşturulan Launcher'imizi çağırıyoruz.
 kamera izni verilmesi durumunda kamerayı açma fonksiyonuzumu yazıyoruz.
 ```
    private fun openCamera() {
-
         val contentValues = ContentValues()
         contentValues.put(MediaStore.Images.Media.TITLE,"imageTitle")
         imageUri=contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,contentValues)
@@ -290,7 +287,6 @@ kamera izni verilmesi durumunda kamerayı açma fonksiyonuzumu yazıyoruz.
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri)
         startActivityForResult(intent, IMAGE_CAPTURE_CODE)
-
     }
 ```
 
@@ -351,7 +347,6 @@ Görseli bozmadan yüksekliğini ve genişliğini aynı oranda küçültme yapı
 Bunun için **ByteArrayOutputStream** yardımcı sınıfını kullanıyoruz. 
 ```
  fun saveButton(view : View){
-
         val carName = binding.carNameText.text.toString()
         val modelName = binding.modelNameText.text.toString()
         val year = binding.yearText.text.toString()
@@ -384,7 +379,7 @@ Bunun için **ByteArrayOutputStream** yardımcı sınıfını kullanıyoruz.
  ```
  val sqlString = "INSERT INTO cars(carname, modelname, year, image) VALUES(?,?,?,?)"
 ```
-Bu kısımda ise kullanıcıdan gelen verilerimiz bir degişkende oldugu için soru işaretleri ile birbirine bağlama işlemlerini yapacağız. Bu bağlama işlemi için compileStatement() metodu ile hangi türde verinin hangi soru işareti ile bağlanması gerektiğini yazıyoruz. Artık kayıt işlemini tamamlamış olduk
+Bu kısımda ise kullanıcıdan gelen verilerimiz bir degişkende oldugu için soru işaretleri ile birbirine bağlama işlemlerini yapacağız. Bu bağlama işlemi için **compileStatement()** metodu ile hangi türde verinin hangi soru işareti ile bağlanması gerektiğini yazıyoruz. Artık kayıt işlemini tamamlamış olduk
 
 Şimdi ise kayıt işlemi bittikten sonra giriş ekranına yani MainActivity'ye dönüyoruz.
 ```
@@ -392,7 +387,35 @@ val intent = Intent(this@CarActivity, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             startActivity(intent)
 ```
-İntent ile giriş ekranına dönüş yaparken arkada açık kalan aktivite olamaması için addFlags() kullanıyoruz ve önceki açık olan aktiviteleri kapatıyoruz.
+İntent ile recyclerView liste ekranına dönüş yaparken arkada açık kalan activity olamaması için **addFlags()** kullanıyoruz ve önceki açık olan activityleri kapatıyoruz.
+
+RecyclerView liste ekranına dönüş yaptıktan sonra listede gösterilecek isim ve görseli SQLite veri tabanından çekme işlemini yapacağız. Direkt liste ekranında gözükmesi için kodlarımızı **onCreate()** fonksiyonu içerisinde yazıyoruz.
+```
+    try {
+            val database = this.openOrCreateDatabase("Cars", MODE_PRIVATE,null)
+            val cursor = database.rawQuery("SELECT * FROM cars",null)
+            val carNameIx = cursor.getColumnIndex("carname")
+            val idIx = cursor.getColumnIndex("id")
+            val imageIx = cursor.getColumnIndex("image")
+```
+İlk olarak tekrar database'mizi aynı isimde olacak şekilde oluşturduktan sonra rawQuery diyip *Cars* tablosundaki herşeyi çek diyoruz. Bir sonraki adımda ise sütun isimlerini int türünde degişkenlere atayarak daha sonrada kullanılabilir hale getirdik.
+Verileri çekmek için ise while() döngüsünü kullanacağız.
+```
+  while (cursor.moveToNext()){
+
+                val name = cursor.getString(carNameIx)
+                val id = cursor.getInt(idIx)
+
+                val byteArray = cursor.getBlob(imageIx)
+                val image = BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
+                val car = Car(name,id,image)
+                carList.add(car)
+            }
+        cursor.close()
+
+```
+while döngüsü içersinde **moveToNext()** methodu yardımı ile cursor tabloda ilerleyebildiği kadar ilerlesin ve bu ilerleme sırasında her defasında verileri değişkenlere aktarsın. Bu değişkenleri model sınıfımız yani *Car* sınıfı yardımı ile recyclerView ekranında kolayca gösterebilmek için bir ArrayList oluşturup içerisine ekliyoruz. 
+Bu adımdaki son işlem olarak  *cursor.close()* diyip imlecimizi kapattık
 
 
 
