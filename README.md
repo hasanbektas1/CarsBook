@@ -415,7 +415,84 @@ Verileri çekmek için ise while() döngüsünü kullanacağız.
 
 ```
 while döngüsü içersinde **moveToNext()** methodu yardımı ile cursor tabloda ilerleyebildiği kadar ilerlesin ve bu ilerleme sırasında her defasında verileri değişkenlere aktarsın. Bu değişkenleri model sınıfımız yani *Car* sınıfı yardımı ile recyclerView ekranında kolayca gösterebilmek için bir ArrayList oluşturup içerisine ekliyoruz. 
-Bu adımdaki son işlem olarak  *cursor.close()* diyip imlecimizi kapattık
+Bu adımdaki son işlem olarak  *cursor.close()* diyip imlecimizi kapattık.
+
+Şimdi RecyclerView için görünümünü ve adapterini oluşturalım. Öncelikle recyclerView ekranında her bir row'da neler görüneceğini belirlemek için bir xml görünümü oluşturuyoruz.
+
+> res > layout > New > Layout Resource File
+
+ile açılan pencerede xml ismimizi belirledikten sonra Root element kısmında oluşturulan xml'in hangi layoutla başlaması gerektiğini belirleyebiliriz.
+
+ ***recycler_row.xml***
+```
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/recyclerImgView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/recyclerTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test"
+            android:textStyle="bold"
+            android:textSize="24sp"
+            android:layout_margin="8dp"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+
+</LinearLayout>
+```
+Listemiz yukarıdan aşağıya doğru sıralanması için LinearLayout ile başlatıp içeriden *orientation* türünü *vertical* yaptık
+Şimdi de recyclerView adapterimizi oluşturalım. Öncelikle paket ismimize sağ tıklayıp normal bir class yaratıyoruz.
+Daha sonra bu sınıfımızın bir RecyclerView adapteri olucağını belirtince bizden bir ViewHolder adında bir yardımcı sınıf oluşturmamızı ister, bu sınıf görünüm tutucudur yani xmli bağlama her bir rowda gösterilecekleri belirleme gibi işlemleri kordine eden bir yardımcı sınıf. içerisinde bir işlem yapılmasa da öyle bir sınıf oluşturmamızı ister.
+```
+class CarAdapter(val carList: ArrayList<Car>) : RecyclerView.Adapter<CarAdapter.CarHolder>() {
+
+    class CarHolder(val binding : RecyclerRowBinding) : RecyclerView.ViewHolder(binding.root){
+
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarHolder {
+        val binding = RecyclerRowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return CarHolder(binding)
+    }
+    override fun onBindViewHolder(holder: CarHolder, position: Int) {
+
+        holder.binding.recyclerTextView.text = carList.get(position).name
+        holder.binding.recyclerImgView.setImageBitmap(carList.get(position).image)
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context,CarActivity::class.java)
+            intent.putExtra("info","detail")
+            intent.putExtra("id",carList.get(position).id)
+            holder.itemView.context.startActivity(intent)
+        }
+    }
+    override fun getItemCount(): Int {
+        return carList.size
+    }
+}
+```
+Yukarıda görüldüğü üzere RecyclerView.Adapter'dan extend ettiğimiz için 3 adet override edilecek fonksiyon verir.
+
+- onCreateViewHolder
+- onBindViewHolder
+- getItemCount
+
+*onCreateViewHolder()* fonksiyonumuzda layout ile baglama işlemini yapacağız, *onBindViewHolder()* fonksiyonunda ise bağlandıktan sonra ne olacağını yanı hangi componentte hangi veriyi göstereceğimizi veya bu gösterilenlere tıklanınca ne olacağını yazıyoruz. Son olarak getItemCount() fonksiyonunda ise kaç adet row olacak, tüm listenin uzunluğu diyerek listemin hepsini verebiliyorum.
 
 
 
