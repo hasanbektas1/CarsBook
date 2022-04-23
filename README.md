@@ -3,7 +3,6 @@
 ![Error](https://github.com/hasanbektas1/CarsBook/blob/master/app/src/main/res/drawable/cars%20(1).png) 
 ![Error](https://github.com/hasanbektas1/CarsBook/blob/master/app/src/main/res/drawable/cars2%20(1).png)
 
-Bu projede **SQLite**, **RecyclerView**, **OptionsMenu**,**Camera And Gallery Permissions** , kullanılmıştır.
 
 Projeden kısaca bahsedecek olursak galeriden seçilen veya kameradan çekilen araba resimini isim, model ve yılını kayıt edip ekranda listeleyip daha sonra istenilen arabaya tıklanıp detaylarını görmek.
 
@@ -163,13 +162,13 @@ seçip açılan pencerede oluşturabiliyoruz sonra menu xmli içerisinde oluştu
 
 </menu>
 ```
-Daha sonra MainActivity sınıfımızda ouşturulan menü'yü bağlama işlemi yapılmalı, bunun için iki adet fonksiyonu override ediyoruz.
+Daha sonra MainActivity sınıfımızda oluşturulan menü'yü bağlama işlemi yapılmalı, bunun için iki adet fonksiyonu override ediyoruz.
 - onCreateOptionsMenu
 - onOptionsItemSelected
 
-ilk fonksiyonda menümüzü MainAcitivitemiz ile bağlıyoruz ikincisinde ise menüdeki iteme tıklanınca ne olacağını yazıyoruz.
+ilk fonksiyonda menümüzü MainAcitivitemiz ile bağlıyoruz, ikincisinde ise menüdeki iteme tıklanınca ne olacağını yazıyoruz.
 
-Listeye ekleme yapabilmek için galeriden seçilen veya Kameradan çekilen fotoğrafı alabilmek için izinler gereklidir
+Listeye ekleme yapabilmek için galeriden seçilen veya kameradan çekilen fotoğrafı alabilmek için izinler gereklidir
 
 Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
 
@@ -178,21 +177,18 @@ Projemizde AndroidManifest.xml içerisinde gerekli olan izinleri eklemeliyiz.
 - android.permission.WRITE_EXTERNAL_STORAGE"
  
  İzinleri ekledikten sonra iznin protection leveli **dangerous** ise kullanıcıdan uygulama içeriside de izin almamız gerekiyor.
- 
- 
  İzin geri dönüşü için ve izin sonucunda gidilen galeriden veri dönüşü için  **ActivityResultLauncher** sınıfını kullanıyoruz.
 ```
 private lateinit var intentResultLauncher : ActivityResultLauncher<Intent>
 private lateinit var permissionLaunchergallery : ActivityResultLauncher<String>
 ```
-ActivityResultLauncher <> işaretleri içerisinde bir tip ister ve hangi tipte olacağını oraya giriyoruz
-İzinler String olduğu için String olarak belirtiyouz
+ActivityResultLauncher <> işaretleri içerisinde bir tip ister ve hangi tipte olacağını yazıyoruz, izinler *String* olduğu için *String* olarak belirtiyoruz.
 
-izin verilmesi durumunda galeriye gidip oradaki fotoğrafın adresini yani url'sini buluyoruz
+İzin verilmesi durumunda galeriye gidip oradaki fotoğrafın adresini yani url'sini buluyoruz
 
 Daha sonra bir bitmap oluşturmalıyız fotoğrafı SQLiteye kayıt ederken fotoğrafın 1 MB' yi geçmesini önlemek için, aksi takdirde programımız düzgün çalışmayabilir.
 Url'yi bitmap olarak dönüştürmek için ise **ImageDecoder** sınıfını kullanıyoruz. Ancak eski versiyonlarda çalışmadığı için önce versiyon kontorolü yapıyoruz.
-Ve son olarak fotoğrafı ekranımızda gösteriyoruz.
+Ve bu adımda son olarak fotoğrafı ekranımızda gösteriyoruz.
 ```
         intentResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),
             ActivityResultCallback {
@@ -341,7 +337,7 @@ Görseli bozmadan yüksekliğini ve genişliğini aynı oranda küçültme yapı
     }
  ```
  
- Artık kayıt etme butonunun kod bloğu içerisini yazma aşamasına geldik.
+ Artık kaydetme butonunun kod bloğu içerisini yazma aşamasına geldik.
  
  Öncelikle SQLiteye kayıt edilecek olan carName, modelName ve year verilerini degişkenlere aktardık daha sonra SQLİteye kayıt işlemlerini yapacağız ama görseli bitmap olarak SQLiteye kayıt edemeyiz. Görselimizi **ByteArray** olarak dönüştürmeliyiz.
 Bunun için **ByteArrayOutputStream** yardımcı sınıfını kullanıyoruz. 
@@ -381,7 +377,7 @@ Bunun için **ByteArrayOutputStream** yardımcı sınıfını kullanıyoruz.
 ```
 Bu kısımda ise kullanıcıdan gelen verilerimiz bir degişkende oldugu için soru işaretleri ile birbirine bağlama işlemlerini yapacağız. Bu bağlama işlemi için **compileStatement()** metodu ile hangi türde verinin hangi soru işareti ile bağlanması gerektiğini yazıyoruz. Artık kayıt işlemini tamamlamış olduk
 
-Şimdi ise kayıt işlemi bittikten sonra giriş ekranına yani MainActivity'ye dönüyoruz.
+Kayıt işlemi bittikten sonra giriş ekranına yani MainActivity'ye dönüyoruz.
 ```
 val intent = Intent(this@CarActivity, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -398,7 +394,7 @@ RecyclerView liste ekranına dönüş yaptıktan sonra listede gösterilecek isi
             val idIx = cursor.getColumnIndex("id")
             val imageIx = cursor.getColumnIndex("image")
 ```
-İlk olarak tekrar database'mizi aynı isimde olacak şekilde oluşturduktan sonra rawQuery diyip *Cars* tablosundaki herşeyi çek diyoruz. Bir sonraki adımda ise sütun isimlerini int türünde degişkenlere atayarak daha sonrada kullanılabilir hale getirdik.
+İlk olarak tekrar database'mizi aynı isimde olacak şekilde oluşturduktan sonra rawQuery diyip *Cars* tablosundaki her şeyi çek diyoruz. Bir sonraki adımda ise sütun isimlerini int türünde degişkenlere atayarak daha sonrada kullanılabilir hale getirdik.
 Verileri çekmek için ise while() döngüsünü kullanacağız.
 ```
   while (cursor.moveToNext()){
