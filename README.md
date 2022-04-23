@@ -539,8 +539,50 @@ CarActivity ekranımızda intent ile yollanılan *String* kelimeyi çekebiliyoru
         val info = intent.getStringExtra("info")
 ```
 
+Eğer intent ile alınan kelimenin karşılık değeri yeni veri eklemek için ise kullanıcının veri giriş yaptığı kısımları boşaltıyoruz
+```
+        if (info.equals("carAdd")){
+            binding.carNameText.setText("")
+            binding.modelNameText.setText("")
+            binding.yearText.setText("")
+            binding.button.visibility = View.VISIBLE
+            binding.imageView.setImageResource(R.drawable.selectimage)
+        }
+```
+Yeni veri eklemek için değilse bu sefer else kısmında detay olarak gösterilecek verilerimizi çekip ekranda gösteriyoruz.
+```
+else{
+            binding.button.visibility = View.INVISIBLE
 
+            val selectedId = intent.getIntExtra("id",1)
+            val database = this.openOrCreateDatabase("Cars", MODE_PRIVATE,null)
+            val cursor = database.rawQuery("SELECT * FROM cars WHERE id = ?", arrayOf(selectedId.toString()))
 
+            val carNamex= cursor.getColumnIndex("carname")
+            val modelNamex = cursor.getColumnIndex("modelname")
+            val yearx = cursor.getColumnIndex("year")
+            val imagex = cursor.getColumnIndex("image")
 
+            while (cursor.moveToNext()){
+
+                binding.carNameText.setText(cursor.getString(carNamex))
+                binding.modelNameText.setText(cursor.getString(modelNamex))
+                binding.yearText.setText(cursor.getString(yearx))
+
+                val byteArray = cursor.getBlob(imagex)
+                val bitmap = BitmapFactory.decodeByteArray(byteArray,0,byteArray.size)
+                binding.imageView.setImageBitmap(bitmap)
+            }
+            cursor.close()
+        }
+```
+Save butonunu kayıt ekranı iken görünürleştirip detay ekranında görünmez hale getiriyoruz.
+```
+            binding.button.visibility = View.VISIBLE
+            binding.button.visibility = View.INVISIBLE
+```
+
+Seçilen arabanın detaylarını gösterebilmek için intent ile yollanılan "id" ile gelen veriyi çekiyoruz, daha sonra yeniden databasemizi oluşturup rawQuery() içerisinde sadece seçilen id yi yazıyoruz. Bunu da *selectionArgs* ile hangisini seçmesi gerektiğini belirleyebiliyoruz ama bunu belirlerken *Array* içersinde *String* olarak vermeliyiz. Verdikten sonra soru işareti ile eşleştiriliyor.
+Son olarak verilerimizi çektikten sonra While loop içerisinde bu sefer direkt ekranımızda gösteriyoruz ve projemizi sonlandırıyoruz..
 
 
